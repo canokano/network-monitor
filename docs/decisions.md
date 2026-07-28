@@ -101,3 +101,23 @@
   **/application-local.yml
   **/application-local.yaml
   ```
+- **상태 변경**: ADR-007로 대체됨 (Infisical 셀프호스팅 도입)
+
+---
+
+## ADR-007 시크릿 관리 도구
+
+- **날짜**: 2026-07-28
+- **상태**: 확정
+- **결정**: Infisical Community Edition 셀프호스팅 도입, `.env` 파일 방식 폐기
+- **이유**:
+  - `.env` 파일은 `.gitignore` 설정을 사람이 놓치면 실수로 커밋될 위험이 있음 (사후 방어)
+  - Infisical은 로컬에 시크릿 파일 자체가 존재하지 않아 원천 차단됨
+  - Community Edition은 오픈소스(MIT)·셀프호스팅 시 사용자 수 제한이 없어, 향후 팀 규모가 커져도 도구를 바꿀 필요 없음 (SaaS형 도구의 인원 과금 모델과 다름)
+  - 맥/윈도우 두 환경을 오가며 개발 중이라도, 자체 서버 하나에 붙는 방식이라 로그인만으로 동기화 가능
+  - 데이터가 외부 서드파티 서버가 아닌 본인 인프라 안에만 존재
+- **트레이드오프 인지**: 서버 운영(백업, 업데이트, 장애 대응)을 직접 책임져야 함. 관리자 계정 복구용 Emergency Kit 분실 시 복구 불가하므로 별도 안전한 곳에 백업 필수
+- **설치 위치**: 프로젝트 저장소와 분리된 별도 경로(`C:\infra\infisical`)에서 셀프호스팅 — 여러 프로젝트가 공용으로 재사용할 인프라이므로 `network-monitor` 저장소에 포함하지 않음
+- **금지**: `.env` 파일에 실제 시크릿 값 기록 (개발 초기 임시 사용 후 폐기, `.env.example`은 변수 목록 문서로만 유지). Infisical 자체의 `.env`(ENCRYPTION_KEY, AUTH_SECRET 등)도 동일하게 커밋 금지
+- **실행 방식 변경**: `docker compose up -d` → Infisical CLI로 시크릿 주입 후 실행 (예: `infisical run -- docker compose up -d`)
+- **참고**: JWT_SECRET 로테이션(kid 헤더 기반 다중 버전)은 2단계(인증/보안)에서 구현, GitHub Actions로 자동화 예정 — 상세는 context.md 로드맵 2단계 참조

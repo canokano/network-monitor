@@ -34,7 +34,8 @@
 | Message Queue | Redis ↔ RabbitMQ | 전략 패턴으로 yml 한 줄 전환 |
 | Database | PostgreSQL | INET, MACADDR, CIDR, JSONB 타입 활용 |
 | Infra | Docker Compose | 멀티 컨테이너 통합 관리 |
-| CI/CD | GitHub Actions | 자동 테스트 + 배포 |
+| 시크릿 관리 | Infisical (셀프호스팅) | `.env` 파일 대체, 원천적 커밋 방지, 인원 제한 없음 (ADR-007) |
+| CI/CD | GitHub Actions | 자동 테스트 + 배포 + 시크릿 로테이션 |
 
 ---
 
@@ -44,7 +45,7 @@
 - Nginx → Spring Boot만 라우팅 (/api, /ws)
 - Python :8001은 외부 비노출 (expose만, ports 아님)
 - CORS: Nginx에서 일괄 처리
-- 환경변수: .env (로컬) / Docker secrets (운영)
+- 시크릿: Infisical(셀프호스팅)로 관리, 로컬에 평문 파일 없음 (ADR-007)
 
 ### 인증/인가
 - JWT — Access Token 15분 + Refresh Token 7일
@@ -134,6 +135,7 @@ io.github.canokano.networkmonitor
     └── security/
         ├── JwtProvider.java
         ├── JwtAuthFilter.java
+        ├── JwtSecretResolver.java     (kid → 시크릿 매핑, 전략 패턴)
         └── UserDetailsServiceImpl.java
 ```
 
@@ -161,8 +163,9 @@ users       : id, username, password, role(ADMIN/VIEWER)
 ## 개발 로드맵
 
 ### 1단계: 코어 기능
+- [x] Docker Compose dev 환경 (PostgreSQL 18, Redis 8, RabbitMQ 4)
+- [ ] Infisical 셀프호스팅 서버 구축 (Docker Compose, 별도 경로) + 프로젝트 연결 (시크릿 관리, ADR-007)
 - [ ] Spring Boot 프로젝트 세팅 (도메인 중심 패키지)
-- [ ] Docker Compose dev 환경 (PostgreSQL)
 - [ ] React 프로젝트 세팅 + 기본 화면
 - [ ] PostgreSQL 스키마 + JPA 엔티티
 - [ ] Python FastAPI 기본 nmap 스캔
@@ -174,6 +177,8 @@ users       : id, username, password, role(ADMIN/VIEWER)
 - [ ] Spring Security 필터 설정
 - [ ] Redis 연동 (Refresh Token, 블랙리스트)
 - [ ] React 로그인 페이지 + Axios 인터셉터
+- [ ] JWT_SECRET을 kid(Key ID) 기반 다중 버전 구조로 설계 (JwtSecretResolver, 전략 패턴)
+- [ ] GitHub Actions로 JWT_SECRET 정기 로테이션 자동화 (Infisical API 연동)
 
 ### 3단계: 실시간/메시징
 - [ ] Redis MQ 연동 (RedisImpl)
@@ -206,7 +211,7 @@ users       : id, username, password, role(ADMIN/VIEWER)
 - ISP: 필요한 기능만 담은 작은 인터페이스
 
 ### 디자인 패턴
-- 전략(Strategy): MQ 전환
+- 전략(Strategy): MQ 전환, JWT 시크릿 kid 매핑
 - 팩토리(Factory): 스캔 결과 객체 생성
 - 옵저버(Observer): WebSocket 이벤트
 - 레포지토리(Repository): JPA 추상화
