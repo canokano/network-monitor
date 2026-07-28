@@ -1,1 +1,1 @@
-rootProject.name = "network-monitor"
+rootProject.name = "network-monitor-backend"
