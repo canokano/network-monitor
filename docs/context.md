@@ -7,7 +7,7 @@
 
 ## 개발자 배경
 
-- Java 웹 개발자 5년차 (육아휴직 중)
+- Java 웹 개발자 5년차 (육아휴직 중, 2026-08-03 복직 예정 → 이후 사이드 프로젝트 시간 제약 커짐)
 - 주력 스택: Java, MyBatis, Oracle, mysql, spring, eGovFramework
 - eGovFramework: Maven 기반, 구형 Spring 컨벤션 → Spring Boot 3.x+ 패턴과 차이 있음
 - 목표: SOLID 원칙 / 디자인 패턴 / 보안 설계 역량 체득 / 네트워크 학습 및 이해 + 풀스택 포트폴리오
@@ -35,6 +35,7 @@
 | Database | PostgreSQL | INET, MACADDR, CIDR, JSONB 타입 활용 |
 | Infra | Docker Compose | 멀티 컨테이너 통합 관리 |
 | 시크릿 관리 | Infisical (셀프호스팅) | `.env` 파일 대체, 원천적 커밋 방지, 인원 제한 없음 (ADR-007) |
+| 이슈/작업 관리 | GitHub Issues + Plane (셀프호스팅) | Issues와 양방향 동기화, todolist 겸용 (ADR-009) |
 | CI/CD | GitHub Actions | 자동 테스트 + 배포 + 시크릿 로테이션 |
 
 ---
